@@ -1,5 +1,5 @@
 #pragma once
-#include "Player.h"
+#include "Botbase.h"
 #include "Board.h"
 #include <iostream>
 using namespace std;
