@@ -1,125 +1,38 @@
-#include "AnalyticsEngine.h"
+#ifndef ANALYTICS_ENGINE_H
+#define ANALYTICS_ENGINE_H
 
-AnalyticsEngine::AnalyticsEngine(int n) {
+#include "Game.h"
+#include "Botbase.h"
+#include <iostream>
 
-    soTran = n;
+using namespace std;
 
-    player1Wins = 0;
-    player2Wins = 0;
-    draws = 0;
+class AnalyticsEngine {
+private:
+    int soTran;
 
-    tongLuot = 0;
+    int player1Wins;
+    int player2Wins;
+    int draws;
 
-    tongDiemPlayer1 = 0;
-    tongDiemPlayer2 = 0;
-}
+    int tongLuot;
 
-void AnalyticsEngine::run(
-    BotBase* player1,
-    BotBase* player2
-) {
+    int tongDiemPlayer1;
+    int tongDiemPlayer2;
 
-    for (int gameIndex = 0; gameIndex < soTran; gameIndex++) {
+public:
+    AnalyticsEngine(int n = 10000);
 
-        OAnQuan game;
+    void run(
+        BotBase* player1,
+        BotBase* player2
+    );
 
-        while (!game.ketThucTroChoi()) {
+    void inThongKe(
+        string player1Name,
+        string player2Name
+    ) const;
+};
 
-            int current = game.nguoiChoiluot();
-
-            BotBase* currentPlayer;
-
-            if (current == 0)
-                currentPlayer = player1;
-            else
-                currentPlayer = player2;
-
-            bool hopLe = false;
-
-            while (!hopLe) {
-
-                int move =
-                    currentPlayer->makeMove(
-                        game.layBanCo()
-                    );
-
-                bool direction =
-                    rand() % 2;
-
-                hopLe =
-                    game.diChuyen(
-                        move,
-                        direction
-                    );
-            }
-        }
-
-        int winner = game.nguoiThang();
-
-        if (winner == 0)
-            player1Wins++;
-        else if (winner == 1)
-            player2Wins++;
-        else
-            draws++;
-
-        tongLuot +=
-            game.laySoLuotDaChoi();
-
-        tongDiemPlayer1 +=
-            game.tinhDiem(0);
-
-        tongDiemPlayer2 +=
-            game.tinhDiem(1);
-    }
-}
-
-void AnalyticsEngine::inThongKe(
-    string player1Name,
-    string player2Name
-) const {
-
-    cout << "\n========== THONG KE ==========\n";
-
-    cout << "\nTong so tran: "
-         << soTran
-         << endl;
-
-    cout << "\n"
-         << player1Name
-         << " thang: "
-         << player1Wins
-         << " ("
-         << (100.0 * player1Wins / soTran)
-         << "%)\n";
-
-    cout << player2Name
-         << " thang: "
-         << player2Wins
-         << " ("
-         << (100.0 * player2Wins / soTran)
-         << "%)\n";
-
-    cout << "Hoa: "
-         << draws
-         << " ("
-         << (100.0 * draws / soTran)
-         << "%)\n";
-
-    cout << "\nSo luot trung binh: "
-         << (double)tongLuot / soTran
-         << endl;
-
-    cout << player1Name
-         << " diem trung binh: "
-         << (double)tongDiemPlayer1 / soTran
-         << endl;
-
-    cout << player2Name
-         << " diem trung binh: "
-         << (double)tongDiemPlayer2 / soTran
-         << endl;
-
-    cout << "\n===============================\n";
-}
+#endif
 ```
