@@ -1,34 +1,54 @@
 #include "Bot2.h"
 
-Bot2::Bot2(string n) : Player(n) {}
+#include <iostream>
+#include <vector>
 
-int Bot2::makeMove(Board &board){
-    int bestIdx=-1;
-    int maxScore=-1;
+using namespace std;
 
-    // chọn ô 7->11 (6->10)
-    for(int i=6;i<=10;i++){
-        if(board.isEmpty(i)) continue;
+extern const bool IN_NUOC_DI;
 
-        Board temp = board;
-        int lastIdx = temp.sow(i);
-        int score = temp.capture(lastIdx);
+Bot2::Bot2(string n) : BotBase(n) {}
 
-        int nextIdx = (lastIdx + 1) % 12;
-        if(temp.isQuan(nextIdx)) score += 10;
+int Bot2::makeMove(OAnQuan &game) {
 
-        if(score > maxScore){
-            maxScore = score;
-            bestIdx = i;
+    Board &board = game.layBanCo();
+
+    vector<int> validMoves = layNuocDiHopLe(board);
+
+    if (validMoves.empty()) {
+        return -1;
+    }
+
+    int bestIdx = -1;
+    int bestScore = -1000000;
+
+    int diemHienTai = game.tinhDiem(side);
+
+    for (int move : validMoves) {
+
+        OAnQuan temp = game;
+
+        bool ok = temp.diChuyen(move, true);
+
+        if (!ok) {
+            continue;
+        }
+
+        int score = temp.tinhDiem(side) - diemHienTai;
+
+        if (score > bestScore) {
+            bestScore = score;
+            bestIdx = move;
         }
     }
 
-    if(bestIdx == -1){ // fallback
-        for(int i=6;i<=10;i++){
-            if(board.cells[i]>0){ bestIdx=i; break; }
-        }
+    if (bestIdx == -1) {
+        bestIdx = chonNgauNhien(board);
     }
 
-    cout << name << " chon o " << bestIdx - 5 << endl;
+    if (IN_NUOC_DI && bestIdx != -1) {
+        cout << name << " chon o " << bestIdx << endl;
+    }
+
     return bestIdx;
 }
