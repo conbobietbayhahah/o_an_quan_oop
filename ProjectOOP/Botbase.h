@@ -1,13 +1,33 @@
-#pragma once
-#include "Board.h"
+#ifndef BOTBASE_H
+#define BOTBASE_H
+
+#include <vector>
 #include <string>
-using namespace std;
+
+#include "Game.h"
 
 class BotBase {
 public:
-    string name;
+    std::string name;
+
     int score;
-    BotBase(string n) { name = n; score = 0; }
-    virtual int makeMove(Board &board) = 0; // phải override
+
+    int side;
+
+    BotBase(std::string n);
+
+    virtual int makeMove(OAnQuan &game) = 0;
+
     virtual ~BotBase() {}
+
+protected:
+    std::vector<int> layNuocDiHopLe(
+        const Board &board
+    ) const;
+
+    int chonNgauNhien(
+        const Board &board
+    ) const;
 };
+
+#endif
