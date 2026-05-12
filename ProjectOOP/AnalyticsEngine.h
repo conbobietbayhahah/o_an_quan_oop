@@ -1,6 +1,8 @@
 #ifndef ANALYTICS_ENGINE_H
 #define ANALYTICS_ENGINE_H
 
+#include <string>
+
 #include "BotBase.h"
 
 class AnalyticsEngine {
