@@ -1,16 +1,20 @@
 #include "Bot1.h"
 
-Bot1::Bot1(string n) : Player(n){
-    srand(time(0));
-}
+#include <iostream>
 
-int Bot1::makeMove(Board &board){
-    // chọn ngẫu nhiên ô 7->11 (chỉ số 6->10)
-    int idx;
-    do{
-        idx = 6 + rand() % 5; // 6,7,8,9,10
-    } while(board.isEmpty(idx));
+using namespace std;
 
-    cout << name << " chon o " << idx - 5 << endl;
+extern const bool IN_NUOC_DI;
+
+Bot1::Bot1(string n) : BotBase(n) {}
+
+int Bot1::makeMove(OAnQuan &game) {
+
+    int idx = chonNgauNhien(game.layBanCo());
+
+    if (IN_NUOC_DI && idx != -1) {
+        cout << name << " chon o " << idx << endl;
+    }
+
     return idx;
 }
