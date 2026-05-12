@@ -1,31 +1,33 @@
 #include "Bot3.h"
-
-#include <iostream>
 #include <vector>
-
+#include <iostream>
 using namespace std;
+const bool IN_NUOC_DI = false;
+Bot3::Bot3(std::string n) : BotBase(n) {}
 
-extern const bool IN_NUOC_DI;
+int Bot3::makeMove(OAnQuan& game) {
 
-Bot3::Bot3(string n) : BotBase(n) {}
-
-int Bot3::makeMove(OAnQuan &game) {
-
-    Board &board = game.layBanCo();
-
+    Board& board = game.layBanCo();
     vector<int> validMoves = layNuocDiHopLe(board);
 
     if (validMoves.empty()) {
         return -1;
     }
 
-    int bestIdx = -1;
-    int bestScore = -1000000;
-
     int mySide = side;
     int oppSide = 1 - side;
 
-    int myDiemHienTai = game.tinhDiem(mySide);
+    int myCurrentScore = game.tinhDiem(mySide);
+    int oppCurrentScore = game.tinhDiem(oppSide);
+
+    int bestAttackMove = -1;
+    int bestAttackGain = 0;
+
+    int bestBlockMove = -1;
+    int bestBlockScore = -1000000;
+
+    bool foundEatingMove = false;
+    bool foundOpponentThreat = false;
 
     for (int move : validMoves) {
 
@@ -37,29 +39,26 @@ int Bot3::makeMove(OAnQuan &game) {
             continue;
         }
 
-        int myGain = temp.tinhDiem(mySide) - myDiemHienTai;
+        int myGain = temp.tinhDiem(mySide) - myCurrentScore;
 
         int oppBestGain = 0;
 
         if (!temp.ketThucTroChoi() &&
             temp.nguoiChoiluot() == oppSide) {
 
-            Board &oppBoard = temp.layBanCo();
+            Board& oppBoard = temp.layBanCo();
 
             int oppStart = (oppSide == 0) ? 1 : 6;
 
-            int oppDiemHienTai =
-                temp.tinhDiem(oppSide);
+            for (int oppMove = oppStart; oppMove <= oppStart + 4; oppMove++) {
 
-            for (int j = oppStart; j <= oppStart + 4; j++) {
-
-                if (oppBoard.isEmpty(j)) {
+                if (oppBoard.isEmpty(oppMove)) {
                     continue;
                 }
 
                 OAnQuan temp2 = temp;
 
-                bool ok2 = temp2.diChuyen(j, true);
+                bool ok2 = temp2.diChuyen(oppMove, true);
 
                 if (!ok2) {
                     continue;
@@ -67,7 +66,7 @@ int Bot3::makeMove(OAnQuan &game) {
 
                 int oppGain =
                     temp2.tinhDiem(oppSide) -
-                    oppDiemHienTai;
+                    temp.tinhDiem(oppSide);
 
                 if (oppGain > oppBestGain) {
                     oppBestGain = oppGain;
@@ -75,21 +74,102 @@ int Bot3::makeMove(OAnQuan &game) {
             }
         }
 
-        int total = myGain - oppBestGain;
+        if (myGain > 0) {
+            foundEatingMove = true;
 
-        if (total > bestScore) {
-            bestScore = total;
-            bestIdx = move;
+            if (myGain > bestAttackGain) {
+                bestAttackGain = myGain;
+                bestAttackMove = move;
+            }
+        }
+
+        if (oppBestGain > 0) {
+            foundOpponentThreat = true;
+        }
+
+        int blockScore = myGain - oppBestGain;
+
+        if (blockScore > bestBlockScore) {
+            bestBlockScore = blockScore;
+            bestBlockMove = move;
         }
     }
 
-    if (bestIdx == -1) {
-        bestIdx = chonNgauNhien(board);
+    int chosenMove = -1;
+
+    /*
+        Logic:
+        - Nếu Bot3 ăn được nhiều hơn hoặc bằng đối thủ có thể ăn:
+            => ưu tiên ăn quân.
+        - Nếu Bot3 ăn ít hơn đối thủ:
+            => ưu tiên chặn đối thủ.
+        - Nếu cả hai đều không ăn được:
+            => random.
+    */
+
+    if (foundEatingMove && bestAttackGain >= 1) {
+
+        if (!foundOpponentThreat) {
+            chosenMove = bestAttackMove;
+        }
+        else {
+            /*
+                Nếu có nguy cơ đối thủ ăn,
+                so sánh nước ăn tốt nhất của mình với điểm chặn tốt nhất.
+            */
+
+            OAnQuan tempAttack = game;
+            tempAttack.diChuyen(bestAttackMove, true);
+
+            int oppGainAfterAttack = 0;
+
+            if (!tempAttack.ketThucTroChoi() &&
+                tempAttack.nguoiChoiluot() == oppSide) {
+
+                Board& oppBoard = tempAttack.layBanCo();
+                int oppStart = (oppSide == 0) ? 1 : 6;
+
+                for (int oppMove = oppStart; oppMove <= oppStart + 4; oppMove++) {
+
+                    if (oppBoard.isEmpty(oppMove)) {
+                        continue;
+                    }
+
+                    OAnQuan temp2 = tempAttack;
+                    temp2.diChuyen(oppMove, true);
+
+                    int gain =
+                        temp2.tinhDiem(oppSide) -
+                        tempAttack.tinhDiem(oppSide);
+
+                    if (gain > oppGainAfterAttack) {
+                        oppGainAfterAttack = gain;
+                    }
+                }
+            }
+
+            if (bestAttackGain >= oppGainAfterAttack) {
+                chosenMove = bestAttackMove;
+            }
+            else {
+                chosenMove = bestBlockMove;
+            }
+        }
+    }
+    else {
+        if (foundOpponentThreat) {
+            chosenMove = bestBlockMove;
+        }
+        else {
+            chosenMove = chonNgauNhien(board);
+        }
     }
 
-    if (IN_NUOC_DI && bestIdx != -1) {
-        cout << name << " chon o " << bestIdx << endl;
+    if (chosenMove == -1) {
+        chosenMove = chonNgauNhien(board);
     }
 
-    return bestIdx;
+    //cout << name << " chon o " << chosenMove << endl;
+
+    return chosenMove;
 }
