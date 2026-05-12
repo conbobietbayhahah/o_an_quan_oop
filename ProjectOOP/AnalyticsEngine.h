@@ -1,31 +1,37 @@
-#pragma once
 #ifndef ANALYTICS_ENGINE_H
 #define ANALYTICS_ENGINE_H
 
-#include "Game.h"
-#include "Botbase.h"
-#include <iostream>
-using namespace std;
+#include "BotBase.h"
 
 class AnalyticsEngine {
 private:
     int soTran;
-    int bot1Wins;
-    int bot2Wins;
+
+    int player1Wins;
+    int player2Wins;
     int draws;
 
     int tongLuot;
-    int tongDiemBot1;
-    int tongDiemBot2;
+
+    int tongDiemPlayer1;
+    int tongDiemPlayer2;
 
 public:
     AnalyticsEngine(int n = 10000);
 
-    void run(BotBase* bot1, BotBase* bot2);
+    int getPlayer1Wins() const;
+    int getPlayer2Wins() const;
+    int getDraws() const;
+    int getSoTran() const;
+
+    void run(
+        BotBase* player1,
+        BotBase* player2
+    );
 
     void inThongKe(
-        string tenBot1,
-        string tenBot2
+        std::string player1Name,
+        std::string player2Name
     ) const;
 };
 
