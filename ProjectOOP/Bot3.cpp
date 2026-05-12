@@ -1,47 +1,95 @@
 #include "Bot3.h"
 
-Bot3::Bot3(string n) : Player(n) {}
+#include <iostream>
+#include <vector>
 
-int Bot3::makeMove(Board &board){
-    int bestIdx=-1;
-    int bestScore=-1000;
+using namespace std;
 
-    // heuristic: myScore - oppScore
-    for(int i=6;i<=10;i++){
-        if(board.isEmpty(i)) continue;
+extern const bool IN_NUOC_DI;
 
-        Board temp = board;
-        int lastIdx = temp.sow(i);
-        int myScore = temp.capture(lastIdx);
+Bot3::Bot3(string n) : BotBase(n) {}
 
-        int nextIdx = (lastIdx + 1) % 12;
-        if(temp.isQuan(nextIdx)) myScore += 10;
+int Bot3::makeMove(OAnQuan &game) {
 
-        // giả lập bot greedy đối phương
-        Board opp = temp;
-        int oppScore=-1;
-        for(int j=6;j<=10;j++){
-            if(opp.isEmpty(j)) continue;
-            Board t = opp;
-            int last = t.sow(j);
-            int s = t.capture(last);
-            if(t.isQuan((last+1)%12)) s += 10;
-            if(s>oppScore) oppScore=s;
+    Board &board = game.layBanCo();
+
+    vector<int> validMoves = layNuocDiHopLe(board);
+
+    if (validMoves.empty()) {
+        return -1;
+    }
+
+    int bestIdx = -1;
+    int bestScore = -1000000;
+
+    int mySide = side;
+    int oppSide = 1 - side;
+
+    int myDiemHienTai = game.tinhDiem(mySide);
+
+    for (int move : validMoves) {
+
+        OAnQuan temp = game;
+
+        bool ok = temp.diChuyen(move, true);
+
+        if (!ok) {
+            continue;
         }
 
-        int total = myScore - oppScore;
-        if(total > bestScore){
+        int myGain = temp.tinhDiem(mySide) - myDiemHienTai;
+
+        int oppBestGain = 0;
+
+        if (!temp.ketThucTroChoi() &&
+            temp.nguoiChoiluot() == oppSide) {
+
+            Board &oppBoard = temp.layBanCo();
+
+            int oppStart = (oppSide == 0) ? 1 : 6;
+
+            int oppDiemHienTai =
+                temp.tinhDiem(oppSide);
+
+            for (int j = oppStart; j <= oppStart + 4; j++) {
+
+                if (oppBoard.isEmpty(j)) {
+                    continue;
+                }
+
+                OAnQuan temp2 = temp;
+
+                bool ok2 = temp2.diChuyen(j, true);
+
+                if (!ok2) {
+                    continue;
+                }
+
+                int oppGain =
+                    temp2.tinhDiem(oppSide) -
+                    oppDiemHienTai;
+
+                if (oppGain > oppBestGain) {
+                    oppBestGain = oppGain;
+                }
+            }
+        }
+
+        int total = myGain - oppBestGain;
+
+        if (total > bestScore) {
             bestScore = total;
-            bestIdx = i;
+            bestIdx = move;
         }
     }
 
-    if(bestIdx==-1){
-        for(int i=6;i<=10;i++){
-            if(board.cells[i]>0){ bestIdx=i; break; }
-        }
+    if (bestIdx == -1) {
+        bestIdx = chonNgauNhien(board);
     }
 
-    cout << name << " chon o " << bestIdx - 5 << endl;
+    if (IN_NUOC_DI && bestIdx != -1) {
+        cout << name << " chon o " << bestIdx << endl;
+    }
+
     return bestIdx;
 }
