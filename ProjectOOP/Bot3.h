@@ -1,11 +1,13 @@
-#pragma once
-#include "Botbase.h"
-#include "Board.h"
-#include <iostream>
-using namespace std;
+#ifndef BOT3_H
+#define BOT3_H
 
-class Bot3 : public Player {
+#include "BotBase.h"
+
+class Bot3 : public BotBase {
 public:
-    Bot3(string n);
-    int makeMove(Board &board) override;
+    Bot3(std::string n);
+
+    int makeMove(OAnQuan &game) override;
 };
+
+#endif
