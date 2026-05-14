@@ -21,6 +21,7 @@
 2. **Cách chơi:**
     * Người chơi chọn một ô dân bất kỳ thuộc quyền sở hữu, lấy tất cả quân trong đó và rải lần lượt vào các ô kế tiếp theo một chiều nhất định.
     * Sau khi rải hết quân, nếu ô kế tiếp còn quân thì người chơi bốc toàn bộ quân ở ô đó và tiếp tục rải
+    * Sau khi rải hết quân, nếu gặp một ô trống rồi đến ô có quân thì người chơi được ăn toàn bộ quân trong ô đó.
 3. **Mục tiêu:**
     * Tính toán để quân cuối cùng kết thúc sao cho có thể ăn được quân ở các ô đối diện hoặc ô Quan.
 
