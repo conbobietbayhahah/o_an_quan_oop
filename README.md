@@ -20,14 +20,13 @@
     * Mỗi ô Quan được đặt 1 quân Quan.
 2. **Cách chơi:**
     * Người chơi chọn một ô dân bất kỳ thuộc quyền sở hữu, lấy tất cả quân trong đó và rải lần lượt vào các ô kế tiếp theo một chiều nhất định.
-    * Nếu quân cuối cùng rơi vào ô có quân, người chơi lấy toàn bộ quân đó và tiếp tục rải.
+    * Sau khi rải hết quân, nếu ô kế tiếp còn quân thì người chơi bốc toàn bộ quân ở ô đó và tiếp tục rải
 3. **Mục tiêu:**
-    * Tính toán để quân cuối cùng kết thúc sao cho có thể "ăn" được quân ở các ô đối diện hoặc ô Quan.
+    * Tính toán để quân cuối cùng kết thúc sao cho có thể ăn được quân ở các ô đối diện hoặc ô Quan.
 
 ---
 
 ## 🏆 Các trường hợp đặc biệt
-* **Ăn quân:** Nếu quân cuối cùng rơi vào một ô trống, và ô liền sau ô trống đó có quân, người chơi được quyền lấy toàn bộ quân ở ô có quân đó.
 * **Ăn chuỗi (Ăn cách ô):** Nếu sau ô vừa bị ăn lại là một ô trống và tiếp theo là một ô có quân, người chơi được phép ăn tiếp ô đó.
 * **Hết quân (Bỏ vốn):** Nếu đến lượt nhưng các ô dân thuộc quyền kiểm soát đều trống, người chơi phải dùng 5 quân dân đã ăn được để rải đều vào 5 ô của mình để tiếp tục ván đấu. Nếu người chơi không đủ 5 quân phải vay mượn quân của đối thủ.
 * **Quy tắc lượt đầu:** Trong lượt đi đầu tiên, người chơi không được phép ăn ô Quan để đảm bảo tính cân bằng.
