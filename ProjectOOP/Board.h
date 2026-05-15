@@ -20,8 +20,7 @@ public:
     bool isQuan(int pos) const;
     bool isEmpty(int pos) const;
 
-    int sow(int pos);
-    int capture(int lastIdx);
+    
 };
 
 #endif
