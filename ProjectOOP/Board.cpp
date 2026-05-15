@@ -46,32 +46,3 @@ bool Board::isEmpty(int pos) const {
     return laOTrong(pos);
 }
 
-int Board::sow(int pos) {
-    int seeds = laySoQuan(pos);
-
-    datSoQuan(pos, 0);
-
-    for (int i = 0; i < seeds; i++) {
-        pos = (pos + 1) % 12;
-        tangSoQuan(pos);
-    }
-
-    return pos;
-}
-
-int Board::capture(int lastIdx) {
-
-    int score = 0;
-
-    int emptyPos = (lastIdx + 1) % 12;
-    int capturePos = (emptyPos + 1) % 12;
-
-    if (laOTrong(emptyPos) && !laOTrong(capturePos)) {
-
-        score = laySoQuan(capturePos);
-
-        datSoQuan(capturePos, 0);
-    }
-
-    return score;
-}
